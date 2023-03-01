@@ -1,0 +1,288 @@
+---
+# Feel free to add content and custom Front Matter to this file.
+# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+layout: home
+---
+
+<p align="center">
+  <a href="https://benerator.de"><img width="300" height="300" src="https://github.com/rapiddweller/rapiddweller-benerator-ce/raw/development/doc/assets/benerator-icon.png" alt="Benerator"></a>
+</p>
+<p align="center">
+    <em>Benerator, the smart way to generate data</em>
+</p>
+
+![.github/workflows/ci.yml](https://github.com/rapiddweller/rapiddweller-benerator-ce/workflows/.github/workflows/ci.yml/badge.svg)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=rapiddweller_rapiddweller-benerator-ce&metric=coverage)](https://sonarcloud.io/dashboard?id=rapiddweller_rapiddweller-benerator-ce)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=rapiddweller_rapiddweller-benerator-ce&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=rapiddweller_rapiddweller-benerator-ce)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=rapiddweller_rapiddweller-benerator-ce&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=rapiddweller_rapiddweller-benerator-ce)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=rapiddweller_rapiddweller-benerator-ce&metric=security_rating)](https://sonarcloud.io/dashboard?id=rapiddweller_rapiddweller-benerator-ce)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.rapiddweller/rapiddweller-benerator-ce/badge.svg)](https://search.maven.org/artifact/com.rapiddweller/rapiddweller-benerator-ce)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rapiddweller_rapiddweller-benerator-ce&metric=alert_status)](https://sonarcloud.io/dashboard?id=rapiddweller_rapiddweller-benerator-ce)
+
+# rapiddweller-benerator-ce
+
+Welcome to [rapiddweller Benerator](https://www.benerator.de), a powerful software solution for data generation, obfuscation, and migration for development, testing, and training purposes. Our core goals are to provide model-driven test data generation that satisfies complex data validity requirements, anonymize production data for showcases and serious performance testing projects, efficiently generate large data volumes, and offer wide customizability and ease of use for non-developers.
+
+## Quickstart ( use benerator version from releases )
+
+1. make sure you have installed **Java 11 JDK** or higher and **JAVA_HOME** environment variable is set correctly
+2. download the latest benerator version from [Releases](https://github.com/rapiddweller/rapiddweller-benerator-ce/releases)
+3. unzip .tar.gz to _choose/your/path_
+4. open a terminal (bash / PowerShell) and add environment variable BENERATOR*HOME=\_choose/your/path* and add _choose/your/path_/bin to your PATH variable
+   For example **(these environment variables are only set in your terminal session, read more about environment variables [here](https://en.wikipedia.org/wiki/Environment_variable))**
+
+#### Linux bash
+
+```shell
+export BENERATOR_HOME=/home/user1/rapiddweller-benerator-ce-3.1.0-jdk-11-dist
+export PATH=$BENERATOR_HOME/bin:$PATH
+chmod a+x $BENERATOR_HOME/bin/*.sh
+```
+
+#### Windows 10 PowerShell
+
+```powershell
+$env:BENERATOR_HOME='C:\Users\user1\rapiddweller-benerator-ce-3.1.0-jdk-11-dist'
+$env:Path += 'C:\Users\user1\rapiddweller-benerator-ce-3.1.0-jdk-11-dist\bin'
+```
+
+5. create your own benerator script myscript.xml with the following content
+
+```xml
+<setup>
+    <import domains="person,organization"/>
+    <generate type="customer" count="1000" threads="1" consumer="LoggingConsumer,CSVEntityExporter">
+      <variable name="person" generator="new PersonGenerator{minAgeYears='21', maxAgeYears='67',femaleQuota='0.5'}" />
+      <variable name="company" generator="CompanyNameGenerator" />
+      <attribute name="first_name" script="person.familyName" />
+      <attribute name="last_name" script="person.givenName" />
+      <attribute name="birthDate" script="person.birthDate" converter="new java.text.SimpleDateFormat('dd.MM.YYYY')" />
+      <attribute name="superuser" values="true, false" />
+      <attribute name="salutation" script="person.salutation " />
+      <attribute name="academicTitle" script="person.academicTitle" />
+      <attribute name="email" script="'info@' + company.shortName.replace(' ', '-') + this.tc_creation + '.de'" />
+    </generate>
+  </setup>
+```
+
+6. run your first benerator script
+
+```powershell
+benerator myscript.xml
+```
+
+And that's it! You're ready to start using rapiddweller Benerator CE. We hope you find it as useful as we do. If you have any questions, please reach out to us on GitHub or visit our website www.benerator.de for more information.
+
+### **Don't forget to leave us a star on GitHub if you found this project helpful!**
+
+Please note that these instructions are a basic guide to get you started with the software, and you may need to consult the documentation or seek support for more detailed usage instructions.
+
+## Introduction
+
+[rapiddweller Benerator](https://www.benerator.de) is a model-driven test data generation tool that allows you to create realistic and valid high-volume test data for testing (unit/integration/load) and showcase setup. It offers several features such as:
+
+- Generation of data that satisfies complex data validity requirements
+- Anonymization of production data for showcases and serious performance testing projects
+- Efficient generation of large data volumes, scaling up to companies with billions of customers and Big Data projects
+- Early applicability in projects
+- Efficiency by creating reuseable and extendable data models
+- Low Code approach to have more transparency
+- Little maintenance effort with ongoing implementation through configuration by exception
+- Wide and easy customizability
+- Applicability by non-developers
+- Intuitive data definition format
+- Satisfying stochastic requirements on data
+- Extraction and anonymization of production data
+- Supporting distributed and heterogeneous applications
+- Establishing a common data generation platform for different business domains and software systems
+
+### Data Synthesization
+
+Performance test data can be completely synthesized. A basic setup can be imported e.g. from DbUnit files, CSV files and fixed column width files. A descriptor file configures how imported data should be processed and adds completely synthesized data. The processed or generated data finally is stored in the system under test.
+![Data Synthesization](https://github.com/rapiddweller/rapiddweller-benerator-ce/raw/development/doc/assets/grafik1.png)
+
+### Production Data Anonymization
+
+Production data can be easily extracted from production systems. Tables can be imported unmodified, filtered, anonymized and converted.
+![Production Data Anonymization](https://github.com/rapiddweller/rapiddweller-benerator-ce/raw/development/doc/assets/grafik2.png)
+
+### Building Blocks
+
+Benerator is developed and continuously extended and improved since June 2006. Benerator is mainly used and tested best for the data file and database data generation, for these applications Benerator should help you with almost all your data generation needs out of the box - and extending Benerator for specific needs is easy.
+![Building Blocks](https://github.com/rapiddweller/rapiddweller-benerator-ce/raw/development/doc/assets/grafik3.png)
+
+rapiddweller Benerator is built for Java 11
+
+_If you need support for Java 8 or earlier, please consider using the versions `<= 1.0.1`._
+
+## Prerequisites
+
+- Java 11 JDK **(we recommend [graalvm](https://www.graalvm.org/) or [azul](https://www.azul.com/))**
+- [Maven](https://maven.apache.org/)
+
+Check your local setup
+
+```bash
+java -version
+mvn -version
+```
+
+## Installation
+
+1. Choose how to install:
+
+   a) Download a Prebuilt Distribution from **Project Overview > Releases**
+   (current release is `3.1.0`, cp. rapiddweller-benerator-ce-3.1.0-jdk-11-dist.zip)
+   and unzip the downloaded file in an appropriate directory, e.g.
+   `/Developer/Applications` or `C:\Program Files\Development`.
+
+   b) Checkout repository and build your own rapiddweller-benerator-ce using  
+   maven command `mvn clean install`
+
+   **Please note**: We highly recommend using option 1a and download our release packages to ease your start.
+   If you clone our GitHub repository, there are no binaries included, and you need to build benerator yourself.
+   Building benerator requires a proper java/maven setup on your system. Learn more in
+
+2. Set **BENERATOR_HOME**  
+   Create an environment variable BENERATOR_HOME that points to the path you extracted Benerator to.
+
+   - Windows Details: Open the System Control Panel, choose Advanced Settings - Environment Variables. Choose New in the
+     User Variables section. Enter BENERATOR_HOME as name and the path as value
+     (e.g. `C:\Program Files\Development\rapiddweller-benerator-ce-3.1.0-jdk-11`). Click OK several times.
+
+   - Mac/Unix/Linux Details: Add an entry that points to Benerator,
+     e.g.: `export BENERATOR_HOME=/Developer/Applications/rapiddweller-benerator-ce-3.1.0-jdk-11`
+
+3. On Unix/Linux/Mac systems: **Set permissions**  
+   Open a shell on the installation's root directory and execute
+   `chmod a+x bin/*.sh`
+
+4. Mac OS X configuration **Set JAVA_HOME**
+   On Mac OS X you need to provide benerator with an explicit configuration of the JAVA_HOME path.
+   See [http://developer.apple.com/qa/qa2001/qa1170.html](http://developer.apple.com/qa/qa2001/qa1170.html)
+   for a good introduction to the OS X way of setting up Java. It is based on aliases
+   conventions. If you are not familiar with that, you should read the article. If Java 8 (or newer) is the default version you will use, you can
+   simply define JAVA_HOME by adding the following line to your .profile: in your user directory:
+   `export JAVA_HOME=/Library/Java/Home`
+   If it does not work or if you need to use different Java versions, it is easier to 'hard-code' JAVA_HOME like this:
+   `export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home/`
+
+**Note**: We currently recommend following projects for your proper Mac OS X setup:
+
+- [brew](https://brew.sh/)
+- [adoptopenjdk](https://adoptopenjdk.net/)
+- [jenv](https://www.jenv.be/)
+
+## Run
+
+If you followed above installation steps carefully, run your benerator scripts from command line.
+
+1. Start benerator from command line
+
+```bash
+benerator <YOUR_BENERATOR_SCRIPT>.xml
+```
+
+To get started please find some demo scripts in the folder
+[/src/demo/resources/demo](/src/demo/resources/demo) of this repository.
+
+## Docs / rapiddweller manual
+
+There are various sources to get you started or extend your benerator knowledge:
+
+- Read our docs on our [Benerator Manual site](https://docs.benerator.de/) or
+  create your own mkdocs with python `mkdocs build`. Keep in mind that you might need to install certain mkdocs dependencies first.
+
+- Consider the [Maven Site Docs](https://docs.benerator.de/mvn-site/) or create your own docs using maven `mvn site:site`. The generated docs
+  include Javadoc, Test Reports and more.
+
+- Download the [Benerator Manual](https://docs.benerator.de/latest/rapiddweller-benerator-manual-latest.pdf)
+  from our website.
+
+- Checkout the benerator website [www.benerator.de](https://www.benerator.de/) for additional support resources.
+
+**If there are still open questions and things are unclear because they are missing or insufficiently explained in our Benerator manual,
+please open an issue on GitHub, so we can expand our manual to make things clearer for you.**
+
+## Table of Contents Manual
+
+Navigate to the sources for our generated mkdocs:
+
+- [Goals and Features](doc/introduction_to_benerator.md)
+- [Installation](doc/installation.md)
+- [The Benerator Project Wizard](doc/the_benerator_project_wizard.md)
+- [Quick tour through the descriptor file format](doc/quick_tour_through_the_descriptor_file_format.md)
+- [Data Generation Concepts](doc/data_generation_concepts.md)
+- [Data Anonymization Concepts](doc/data_anonymization_concepts.md)
+- [Regular Expression Support](doc/regular_expression_support.md)
+- [Data File Processing](doc/data_file_processing.md)
+- [XML File Processing](doc/xml_file_processing.md)
+- [Distribution Concepts](doc/distribution.md)
+- [Using Relational Databases](doc/using_relational_databases.md)
+- [Message Queue Access (Enterprise Edition)](doc/message_queue_access.md)
+- [Kafka Access (Enterprise Edition)](doc/kafka_access.md)
+- [Advanced Topics](doc/advanced_topics.md)
+- [Generating Unique Data](doc/generating_unique_data.md)
+- [Scripting](doc/scripting.md)
+- [rapiddwellerScript](doc/rapiddwellerscript.md)
+- [Command Line Tools](doc/command_line_tools.md)
+- [Domains](doc/domains.md)
+- [Component Reference](doc/component_reference.md)
+- [Using DB Sanity](doc/using_db_sanity.md)
+- [Maven Benerator Plugin](doc/maven_benerator_plugin.md)
+- [Extending Benerator](doc/extending_benerator.md)
+- [Using Benerator as Load Generator](doc/using_benerator_as_load_generator.md)
+- [NoSQL Support](doc/no_sql_support.md)
+- [Troubleshooting](doc/troubleshooting.md)
+- [Monitoring Benerator](doc/monitoring_benerator.md)
+- [Benerator Performance Tuning](doc/performance_tuning.md)
+- [Migrating Benerator Projects](doc/migrating_benerator_projects.md)
+
+## Development Quick Start (only Linux and Mac OS X)
+
+If you want to start development or use the maven project to build rapiddweller Benerator by yourself,
+on Linux or Mac OS X you can also try the quickstart by using the helper scripts.
+It might be required to run the scripts with `sudo`.
+
+**IMPORTANT:** If you want to use the command `benerator` in your shell session, you have to execute `source script/2_setup_benerator.sh`  
+If you want to install Benerator permanently into your system, you have to modify your environment file or your `~/.profile`  
+and add ENV variable `BENERATOR_HOME` and `PATH=$BENERATOR_HOME/bin:$PATH`
+
+to execute the scripts you can do ...
+
+`bash script/1_install_mvn_dependencies.sh`  
+`source script/2_setup_benerator.sh`  
+`bash script/3_execute_demos.sh`
+
+... alternatively, you can also set execute permissions like ...
+
+`chmod +x script/1_install_mvn_dependencies.sh`  
+`chmod +x script/2_setup_benerator.sh`  
+`chmod +x script/3_execute_demos.sh`
+
+... and execute scripts like this
+
+`.script/1_install_mvn_dependencies.sh`  
+`.script/2_setup_benerator.sh`  
+`.script/3_execute_demos.sh`
+
+- _1_install_mvn_dependencies.sh_ : This script is checking Prerequisites for you, cloning all rapiddweller-benerator-ce SubProjects and install via
+  Maven locally.
+
+- _2_setup_benerator.sh_ : This script is building on script no. 1 and using installed dependencies and packed jar, assemble it to a
+  rapiddweller-benerator-ce.tar.gz and setup Benerator locally into your user home directory.
+
+- _3_execute_demos.sh_ : This script is building on script no. 2 and use the unpacked and configure rapiddweller-benerator-ce application to execute
+  existing demo files.
+
+## Getting Involved
+
+If you would like to reach out to the maintainers, contact us via our
+[Contact-Form](https://www.benerator.de/contact-us) or email us at
+[solution.benerator@rapiddweller.com](mailto:solution.benerator@rapiddweller.com).
+
+## Contributing
+
+Please see our [Contributing](CONTRIBUTING.md) guidelines.
+For releasing see our [release creation guide](RELEASE.md).
+Check out the maintainers [website](https://rapiddweller.com)!
